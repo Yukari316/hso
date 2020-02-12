@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 停止按钮 -->
+    <item
+        android:id="@+id/stop"
+        android:icon="@drawable/ic_stop"
+        android:visible="true"
+        android:title="share_setu"
+        app:showAsAction="ifRoom"/>
+
+    <!-- 关于按钮 -->
+    <item
+        android:id="@+id/share_setu"
+        android:icon="@drawable/ic_share"
+        android:title="share_setu"
+        app:showAsAction="ifRoom"/>
+
+    <!-- 菜单项 -->
+    <item android:id="@+id/github"
+        android:title="GitHub"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/goinfo"
+        android:title="关于"
+        app:showAsAction="never"/>
+
+</menu>

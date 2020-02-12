@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">来点色图</string>
+    <string name="version">1.4</string>
+    <string name="info">
+        开发者：cbgan\n
+        [cbgancna@gmail.com]\n
+        本软件所使用的API和URL均与开发者没有联系
+    </string>
+
 </resources>

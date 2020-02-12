@@ -7,8 +7,8 @@ android {
         applicationId "com.cbgan.hso"
         minSdkVersion 26
         targetSdkVersion 29
-        versionCode 13
-        versionName "1.3"
+        versionCode 18
+        versionName "@string/version"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,4 +31,6 @@ dependencies {
         exclude group:'org.hamcrest',module:'hamcrest-core'
     }
     implementation 'androidx.cardview:cardview:1.0.0'
+    compile 'me.gujun.android.taggroup:library:1.4@aar'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
 }

@@ -5,7 +5,7 @@
     android:id="@+id/MAIN"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
 
     <ScrollView
         android:id="@+id/scrollView2"
@@ -23,6 +23,10 @@
             android:gravity="center|top"
             android:orientation="vertical">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/divider" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/setu_layout"
@@ -38,8 +42,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@android:drawable/screen_background_dark" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ProgressBar
                     android:id="@+id/NetStateBar"
@@ -70,6 +73,29 @@
                     android:text="N/A" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/TagUI"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <me.gujun.android.taggroup.TagGroup
+                    android:layout_margin="3dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tags"
+                    style="@style/TagGroup"
+                    app:atg_textColor="@color/pink"
+                    app:atg_borderColor="@color/pink" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider" />
 
             <LinearLayout
                 android:id="@+id/INFOUI1"
@@ -105,10 +131,10 @@
                     android:id="@+id/piclink_pix_net"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
-                    android:layout_height="34dp"
+                    android:layout_height="38dp"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/ic_share"
+                    android:background="@drawable/ic_link"
                     android:paddingLeft="5dp"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
@@ -155,10 +181,10 @@
                     android:id="@+id/piclink_pic_net"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
-                    android:layout_height="34dp"
+                    android:layout_height="38dp"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/ic_share"
+                    android:background="@drawable/ic_link"
                     android:paddingLeft="5dp"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
@@ -205,10 +231,10 @@
                     android:id="@+id/piclink_auth_net"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
-                    android:layout_height="34dp"
+                    android:layout_height="38dp"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/ic_share"
+                    android:background="@drawable/ic_link"
                     android:paddingLeft="5dp"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
@@ -238,7 +264,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@color/white">
 
             <Button
                 android:id="@+id/R18"
@@ -293,5 +320,20 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/Title"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/pink"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="@string/app_name"/>
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
