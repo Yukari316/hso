@@ -27,13 +27,17 @@ import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.cbgan.hso.utils.NET;
 import com.cbgan.hso.R;
-import com.cbgan.hso.StreamIO;
-import com.cbgan.hso.net;
+import com.cbgan.hso.utils.SetuNetThread;
+import com.cbgan.hso.utils.StreamIO;
+import com.cbgan.hso.resource.Values;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.simple.JSONObject;
+
+import java.util.Objects;
 
 import me.gujun.android.taggroup.TagGroup;
 
@@ -43,10 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView piclink_pix,piclink_pic,piclink_auth,setu_name;
     private TagGroup tags;
     private LinearLayout INFOUI1,INFOUI2,INFOUI3,TagUI;
-    private ConstraintLayout setu_Layout;
     private Bitmap setu;
     private ImageView setu_view;
-    private Button hso,save,piclink_pix_net,piclink_pic_net,piclink_auth_net,R18_SW;
+    private Button hso;
+    private Button save;
+    private Button R18_SW;
     private ProgressBar waitNet;
     private ActionMenuItemView stopNet;
     //网络线程
@@ -57,11 +62,6 @@ public class MainActivity extends AppCompatActivity {
     private JSONObject setu_json;
     private boolean R18 = false;
     private boolean load_success = false;//json加载成功标识
-    //URL信息
-    private String setu_path="https://api.lolicon.app/setu/?r18=0";
-    private String setu_path_r18="https://api.lolicon.app/setu/?r18=1";
-    private String pixiv_auth_path="https://www.pixiv.net/users/";
-    private String pixiv_pic_path="https://www.pixiv.net/artworks/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +79,13 @@ public class MainActivity extends AppCompatActivity {
         INFOUI2=findViewById(R.id.INFOUI2);
         INFOUI3=findViewById(R.id.INFOUI3);
         TagUI=findViewById(R.id.TagUI);
-        setu_Layout=findViewById(R.id.setu_layout);
+        ConstraintLayout setu_Layout = findViewById(R.id.setu_layout);
         //按钮UI
         hso=findViewById(R.id.hso);
         save=findViewById(R.id.save);
-        piclink_pix_net=findViewById(R.id.piclink_pix_net);
-        piclink_pic_net=findViewById(R.id.piclink_pic_net);
-        piclink_auth_net=findViewById(R.id.piclink_auth_net);
+        Button piclink_pix_net = findViewById(R.id.piclink_pix_net);
+        Button piclink_pic_net = findViewById(R.id.piclink_pic_net);
+        Button piclink_auth_net = findViewById(R.id.piclink_auth_net);
         R18_SW=findViewById(R.id.R18);
 
         waitNet=findViewById(R.id.NetStateBar);
@@ -97,9 +97,6 @@ public class MainActivity extends AppCompatActivity {
         stopNet.setVisibility(View.GONE);//隐藏中止按钮
         if(Build.VERSION.SDK_INT<29) CheckPrm();//对Android Q以下设备申请权限
         Log.i("[device api level]",Build.VERSION.SDK_INT+"");
-
-        tags.setTags(new String[]{"Tag1", "Tag2", "Tag3"});
-        tags.setTags(new  String[]{});
 
         //禁用保存按钮
         save.setEnabled(false);
@@ -178,8 +175,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplication(), "开冲", Toast.LENGTH_SHORT).show();
                 //开启网络线程
                 waitNet.setVisibility(View.VISIBLE);
-                if(R18) Net=new SetuNetThread(setu_path_r18);
-                else Net=new SetuNetThread(setu_path);
+                if(R18) Net=new SetuNetThread(Values.setu_path_r18,mHandler);
+                else Net=new SetuNetThread(Values.setu_path,mHandler);
                 isStoped=false;
                 Net.start();
             }
@@ -193,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                     save.setEnabled(false);
                     save.setBackgroundColor(Color.GRAY);
                 }else{
-                    Toast.makeText(MainActivity.this,"想🍑吃(保存失败)",Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this,"想🍑吃(保存失败)",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -219,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (load_success) {
-                    Uri pixiv_uri = Uri.parse(pixiv_pic_path+setu_json.get("pid"));
+                    Uri pixiv_uri = Uri.parse(Values.pixiv_pic_path +setu_json.get("pid"));
                     Intent pixiv_intent = new Intent(Intent.ACTION_VIEW, pixiv_uri);
                     startActivity(pixiv_intent);
                 }
@@ -241,37 +238,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (load_success) {
-                    Uri author_uri = Uri.parse(pixiv_auth_path+setu_json.get("uid"));
+                    Uri author_uri = Uri.parse(Values.pixiv_auth_path+setu_json.get("uid"));
                     Intent author_intent = new Intent(Intent.ACTION_VIEW, author_uri);
                     startActivity(author_intent);
                 }
             }
         });
-    }
-
-    public class SetuNetThread extends Thread {//获取色图的线程
-        private String setu_PATH,setu_bitmap_url;
-        private JSONObject setu_info=null;
-        private Bitmap setu_thread;
-
-        //传入外部变量
-        public SetuNetThread(String setu_PATH) {
-            this.setu_PATH = setu_PATH;
-        }
-
-        @Override
-        public void run(){
-            Log.i("[Thread]URL",setu_PATH);
-            try {
-                setu_info= net.GET_JSON(setu_PATH,mHandler);
-                setu_bitmap_url=setu_info.get("url").toString();
-                Log.i("[setu_url]",""+setu_bitmap_url);
-                setu_thread=net.GET_IMG(setu_bitmap_url,mHandler);
-                mHandler.obtainMessage(MSG_SUCCESS,setu_thread).sendToTarget();//向主线程发送JSON数据
-            } catch (Exception e) {
-                Log.e("[ThreadError]", "" + e);
-            }
-        }
     }
 
     private static final int MSG_SUCCESS = 0;//获取图片成功标识
@@ -351,13 +323,13 @@ public class MainActivity extends AppCompatActivity {
                     setu_json=(JSONObject) msg.obj;
                     Toast.makeText(getApplication(), "色图信息获取成功", Toast.LENGTH_SHORT).show();
                     INFO_UI_SHOW();
-                    piclink_pix.setText(pixiv_pic_path+setu_json.get("pid"));
+                    piclink_pix.setText(Values.pixiv_pic_path+setu_json.get("pid"));
                     piclink_pic.setText(setu_json.get("url").toString());
-                    piclink_auth.setText(pixiv_auth_path+setu_json.get("uid"));
+                    piclink_auth.setText(Values.pixiv_auth_path+setu_json.get("uid"));
                     setu_name.setText(setu_json.get("title")+"\n"+setu_json.get("author"));
                     Log.i("[JSON_INFO]",""+msg.obj);
                     //将JSON中的tags数据转换为String数组并更新UI
-                    String tags_string = setu_json.get("tags").toString();
+                    String tags_string = Objects.requireNonNull(setu_json.get("tags")).toString();
                     try {
                         JSONArray param = new JSONArray(tags_string);
                         String[] tags_array = new String[param.length()];

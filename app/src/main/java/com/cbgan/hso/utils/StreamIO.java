@@ -1,4 +1,4 @@
-package com.cbgan.hso;
+package com.cbgan.hso.utils;
 
 import android.content.ContentValues;
 import android.content.Context;
