@@ -33,4 +33,5 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     compile 'me.gujun.android.taggroup:library:1.4@aar'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.tzx.json:jsonhandleview:1.2.2'
 }

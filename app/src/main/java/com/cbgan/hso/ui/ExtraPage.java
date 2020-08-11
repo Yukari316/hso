@@ -3,10 +3,14 @@ package com.cbgan.hso.ui;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.LayoutDirection;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +18,7 @@ import android.widget.Toast;
 import com.cbgan.hso.R;
 import com.cbgan.hso.resource.MessageStatus;
 import com.cbgan.hso.thread.SetuUploadThread;
+import com.dandan.jsonhandleview.library.JsonViewLayout;
 
 import org.json.simple.JSONObject;
 
@@ -25,9 +30,12 @@ public class ExtraPage extends AppCompatActivity {
 
     private EditText PID_Editor;
     private EditText Token_Editor;
-    private TextView JsonView;
     private ProgressBar WaitNet;
+    private FrameLayout JsonFramelayout;
     private Thread Net;
+
+    private JsonViewLayout jsonViewLayout;
+    private int JsonViewIndex = 0;
 
     private boolean isStoped = true;
 
@@ -38,8 +46,8 @@ public class ExtraPage extends AppCompatActivity {
 
         PID_Editor = findViewById(R.id.pid);
         Token_Editor = findViewById(R.id.token);
-        JsonView = findViewById(R.id.jsonView);
         WaitNet = findViewById(R.id.net_uploading);
+        JsonFramelayout = findViewById(R.id.json_framelayout);
         Button uploadBtn = findViewById(R.id.upload_pic);
 
         uploadBtn.setOnClickListener(new View.OnClickListener() {//点击按钮获得色图
@@ -50,6 +58,8 @@ public class ExtraPage extends AppCompatActivity {
                 if(token.equals("")||pid.equals("")){
                     Toast.makeText(ExtraPage.this,"Pid/Token为空",Toast.LENGTH_SHORT).show();
                 }else{
+                    //删除原来的json视图
+                    JsonFramelayout.removeAllViews();
                     Net=new SetuUploadThread(pid,token,mHandler);
                     isStoped=false;
                     Net.start();
@@ -61,6 +71,12 @@ public class ExtraPage extends AppCompatActivity {
         });
     }
 
+    private JsonViewLayout createJsonView() {
+        JsonViewLayout jsonView = new JsonViewLayout(this);
+        jsonView.setId(JsonViewIndex++);
+        return jsonView;
+    }
+
     private Handler mHandler = new Handler(){
         public void handleMessage (Message msg) {//此方法在ui线程运行
             WaitNet.setVisibility(View.GONE);
@@ -70,7 +86,10 @@ public class ExtraPage extends AppCompatActivity {
                 case MessageStatus.GET_JSON_SUCCESS:
                     isStoped=true;
                     JSONObject serverRespons = (JSONObject) msg.obj;
-                    JsonView.setText(serverRespons.toJSONString());
+                    JsonViewLayout currJson = createJsonView();
+                    JsonFramelayout.addView(currJson);
+                    currJson.bindJson(serverRespons.toJSONString());
+                    currJson.expandAll();
                     String code= Objects.requireNonNull(serverRespons.get("code")).toString();
                     if(code.equals("0")){
                         String count= Objects.requireNonNull(serverRespons.get("count")).toString();
