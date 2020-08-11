@@ -23,20 +23,26 @@ public class IOUtils {
     /*
     初始化配置文件
      */
-    public void InitData(){
+    public boolean InitData(){
         int currentSource=sharedPreferences.getInt(SourceKeyName,-1);
         if(currentSource == -1){
             Log.i("[SharedPreferences_source]","Source config not found,Create new");
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(SourceKeyName,0);
-            editor.putString(LoliconTokenName,"");
-            editor.putString(YukariTokenName,"");
-            editor.apply();
+            try{
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(SourceKeyName,0);
+                editor.putString(LoliconTokenName,"");
+                editor.putString(YukariTokenName,"");
+                return editor.commit();
+            }catch (Exception e){
+                Log.e("[InitError]","sharedPreferences init error ("+e+")");
+                return false;
+            }
         }else {
             Resources res = context.getResources();
             Log.i("[API source check]","Get source type"+ Values.source[currentSource]);
+            Toast.makeText(context,"当前使用源："+Values.source[currentSource],Toast.LENGTH_SHORT).show();
+            return true;
         }
-        Toast.makeText(context,"当前使用源："+Values.source[currentSource],Toast.LENGTH_SHORT).show();
     }
 
     public int GetSourceType(){

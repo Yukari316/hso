@@ -3,7 +3,6 @@ package one.yukari.hso.ui;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import  one.yukari.hso.R;
 
 public class info_page extends AppCompatActivity {

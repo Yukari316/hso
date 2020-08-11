@@ -4,6 +4,9 @@
 
     <!-- 停止按钮 -->
     <item
+        android:id="@+id/api_key"
+        android:title="@string/api_key" />
+    <item
         android:id="@+id/stop"
         android:icon="@drawable/ic_stop"
         android:visible="true"

@@ -15,4 +15,5 @@
     <string name="gnu_general_public_license_v3">GNU GENERAL PUBLIC LICENSE v3</string>
     <string name="todo">TODO</string>
     <string name="source_key_name">source</string>
+    <string name="api_key">API KEY</string>
 </resources>

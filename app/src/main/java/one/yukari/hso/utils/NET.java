@@ -2,7 +2,6 @@ package one.yukari.hso.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Handler;
 import android.util.Log;
 
@@ -51,7 +50,6 @@ public class NET {
     }
     public static void GET_IMG(String path, Handler msgHandler) {//从服务器获取JSON
         try {
-            Image setu = null;
             URL setu_url = new URL(path);
             HttpURLConnection connection=(HttpURLConnection) setu_url.openConnection();
             connection.setConnectTimeout(5000);//设置超时

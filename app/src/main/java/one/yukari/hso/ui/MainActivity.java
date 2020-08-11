@@ -94,15 +94,16 @@ public class MainActivity extends AppCompatActivity {
         setu_view=findViewById(R.id.setu);
         stopNet=findViewById(R.id.stop);
         tags=findViewById(R.id.tags);
-        你可真是他娘是个天才=1;
 
         stopNet.setVisibility(View.GONE);//隐藏中止按钮
         if(Build.VERSION.SDK_INT<29) CheckPrm();//对Android Q以下设备申请权限
         Log.i("[device api level]",Build.VERSION.SDK_INT+"");
 
-        Log.i("[Condig file check]","Try find config");
+        //检查配置文件
         IOUtils config = new IOUtils(MainActivity.this);
-        config.InitData();
+        if(!config.InitData()){
+            System.exit(0);
+        }
 
         //禁用保存按钮
         save.setEnabled(false);
@@ -184,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
         hso.setOnClickListener(new View.OnClickListener() {//点击按钮获得色图
             @Override
             public void onClick(View v) {//色图获取按钮监听
+                Log.i("[Condig file check]","Try find config");
+                IOUtils config = new IOUtils(MainActivity.this);
                 stopNet.setVisibility(View.VISIBLE);//显示停止按钮
                 load_success=false;
                 INFO_UI_CLEAR();
@@ -203,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
                 //开启网络线程
                 waitNet.setVisibility(View.VISIBLE);
                 //读取API类型
-                IOUtils config = new IOUtils(MainActivity.this);
                 int APIType = config.GetSourceType();
                 String url = Values.source_url[APIType];
                 if(R18) url+="?r18=1";
