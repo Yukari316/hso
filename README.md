@@ -1,11 +1,14 @@
 # 来点色图
 不来一个手冲吗？
 
-本软件所使用的API和URL均与开发者没有联系
-
 如有使用本软件造成的任何后果，开发者概不负责
 
 请节制使用
 
-图片片源API由：http://api.lolicon.app/#/setu
+图片片源API由：
+
+[Lolicon](https://api.lolicon.app/#/setu)
+
+[Yukari](https://www.yukari.one/2020/08/10/setuAPI/)
+
 提供
