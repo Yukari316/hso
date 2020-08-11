@@ -1,4 +1,4 @@
-package com.cbgan.hso.resource;
+package one.yukari.hso.resource;
 
 public class MessageStatus {
     public static final int IMG_SUCCESS = 0;//获取图片成功标识

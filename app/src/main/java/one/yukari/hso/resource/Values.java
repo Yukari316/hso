@@ -1,4 +1,4 @@
-package com.cbgan.hso.resource;
+package one.yukari.hso.resource;
 
 public class Values {
     public static final String pixiv_auth_url ="https://www.pixiv.net/users/";

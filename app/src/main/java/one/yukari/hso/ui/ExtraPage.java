@@ -1,4 +1,4 @@
-package com.cbgan.hso.ui;
+package one.yukari.hso.ui;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,9 +11,9 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.cbgan.hso.R;
-import com.cbgan.hso.resource.MessageStatus;
-import com.cbgan.hso.thread.SetuUploadThread;
+import one.yukari.hso.R;
+import one.yukari.hso.resource.MessageStatus;
+import one.yukari.hso.thread.SetuUploadThread;
 import com.dandan.jsonhandleview.library.JsonViewLayout;
 
 import org.json.simple.JSONObject;

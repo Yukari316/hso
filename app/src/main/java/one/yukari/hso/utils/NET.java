@@ -1,15 +1,13 @@
-package com.cbgan.hso.utils;
+package one.yukari.hso.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
-import android.net.ConnectivityManager;
-import android.net.UrlQuerySanitizer;
 import android.os.Handler;
 import android.util.Log;
 
-import com.cbgan.hso.resource.MessageStatus;
-import com.cbgan.hso.resource.Values;
+import one.yukari.hso.resource.MessageStatus;
+import one.yukari.hso.resource.Values;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

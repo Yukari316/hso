@@ -1,9 +1,9 @@
-package com.cbgan.hso.thread;
+package one.yukari.hso.thread;
 
 import android.os.Handler;
 import android.util.Log;
 
-import com.cbgan.hso.utils.NET;
+import one.yukari.hso.utils.NET;
 
 public class SetuUploadThread extends Thread {
     private String Pid;

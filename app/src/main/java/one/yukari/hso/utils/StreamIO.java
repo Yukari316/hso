@@ -1,4 +1,4 @@
-package com.cbgan.hso.utils;
+package one.yukari.hso.utils;
 
 import android.content.ContentValues;
 import android.content.Context;

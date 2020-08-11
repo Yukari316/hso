@@ -6,7 +6,7 @@
     android:id="@+id/MAIN"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.info_page">
+    tools:context="one.yukari.hso.ui.info_page">
 
     <LinearLayout
         android:id="@+id/linearLayout2"

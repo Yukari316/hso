@@ -1,4 +1,4 @@
-package com.cbgan.hso.ui;
+package one.yukari.hso.ui;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -29,12 +29,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 
-import com.cbgan.hso.resource.MessageStatus;
-import com.cbgan.hso.utils.IOUtils;
-import com.cbgan.hso.R;
-import com.cbgan.hso.thread.SetuNetThread;
-import com.cbgan.hso.utils.StreamIO;
-import com.cbgan.hso.resource.Values;
+import one.yukari.hso.resource.MessageStatus;
+import one.yukari.hso.utils.IOUtils;
+import one.yukari.hso.R;
+import one.yukari.hso.thread.SetuNetThread;
+import one.yukari.hso.utils.StreamIO;
+import one.yukari.hso.resource.Values;
 
 import org.json.JSONArray;
 import org.json.JSONException;

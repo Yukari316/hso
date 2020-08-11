@@ -1,9 +1,9 @@
-package com.cbgan.hso.thread;
+package one.yukari.hso.thread;
 import android.util.Log;
 import android.os.Handler;
 
-import com.cbgan.hso.resource.MessageStatus;
-import com.cbgan.hso.utils.NET;
+import one.yukari.hso.resource.MessageStatus;
+import one.yukari.hso.utils.NET;
 
 import org.json.simple.JSONObject;
 

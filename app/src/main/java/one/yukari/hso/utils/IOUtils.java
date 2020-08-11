@@ -1,4 +1,4 @@
-package com.cbgan.hso.utils;
+package one.yukari.hso.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,8 +6,7 @@ import android.content.res.Resources;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.cbgan.hso.resource.Values;
-import com.cbgan.hso.ui.MainActivity;
+import one.yukari.hso.resource.Values;
 
 public class IOUtils {
     private final String SourceKeyName = "source";
@@ -35,7 +34,7 @@ public class IOUtils {
             editor.apply();
         }else {
             Resources res = context.getResources();
-            Log.i("[API source check]","Get source type"+Values.source[currentSource]);
+            Log.i("[API source check]","Get source type"+ Values.source[currentSource]);
         }
         Toast.makeText(context,"当前使用源："+Values.source[currentSource],Toast.LENGTH_SHORT).show();
     }
