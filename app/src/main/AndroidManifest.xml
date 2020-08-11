@@ -15,11 +15,13 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.info_page"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".ui.ExtraPage"
             android:screenOrientation="portrait">
         </activity>
     </application>

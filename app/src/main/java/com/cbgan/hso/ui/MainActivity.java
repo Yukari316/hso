@@ -1,6 +1,8 @@
 package com.cbgan.hso.ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -22,14 +24,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.cbgan.hso.utils.NET;
+import com.cbgan.hso.resource.MessageStatus;
+import com.cbgan.hso.utils.IOUtils;
 import com.cbgan.hso.R;
-import com.cbgan.hso.utils.SetuNetThread;
+import com.cbgan.hso.thread.SetuNetThread;
 import com.cbgan.hso.utils.StreamIO;
 import com.cbgan.hso.resource.Values;
 
@@ -79,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         INFOUI2=findViewById(R.id.INFOUI2);
         INFOUI3=findViewById(R.id.INFOUI3);
         TagUI=findViewById(R.id.TagUI);
-        ConstraintLayout setu_Layout = findViewById(R.id.setu_layout);
         //按钮UI
         hso=findViewById(R.id.hso);
         save=findViewById(R.id.save);
@@ -97,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
         stopNet.setVisibility(View.GONE);//隐藏中止按钮
         if(Build.VERSION.SDK_INT<29) CheckPrm();//对Android Q以下设备申请权限
         Log.i("[device api level]",Build.VERSION.SDK_INT+"");
+
+        Log.i("[Condig file check]","Try find config");
+        IOUtils config = new IOUtils(MainActivity.this);
+        config.InitData();
 
         //禁用保存按钮
         save.setEnabled(false);
@@ -119,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
                         }else {
                             Toast.makeText(MainActivity.this,"你分享个🔨(未加载任何图片）",Toast.LENGTH_SHORT).show();
                         }
-                        Log.i("[fuck]","fuck");
                         break;
                     case R.id.stop://图片停止加载
                         Net.interrupt();
@@ -141,6 +146,23 @@ public class MainActivity extends AppCompatActivity {
                         hso.setBackgroundColor(Color.parseColor("#F16090"));
                         hso.setText("再给👴整一个");
                         break;
+                    case R.id.switch_source:
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle(R.string.sw_source)
+                                .setItems(Values.source, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        IOUtils ioAction = new IOUtils(MainActivity.this);
+                                        if (ioAction.SwitchSource(which)){
+                                            Log.i("[source sw]","change source to "+Values.source[which]);
+                                            Toast.makeText(MainActivity.this,"成功切换到"+Values.source[which]+"!",Toast.LENGTH_SHORT).show();
+                                        }else{
+                                            Log.e("[source sw]","change source to "+Values.source[which]+"failed");
+                                            Toast.makeText(MainActivity.this,"切换源失败",Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                        builder.create().show();
+                        break;
                     case R.id.github:
                         Uri github_uri = Uri.parse("https://github.com/CBGan/hso");
                         Intent github_intent = new Intent(Intent.ACTION_VIEW, github_uri);
@@ -149,6 +171,11 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.goinfo:
                         Intent info_intent = new Intent(MainActivity.this,info_page.class);
                         startActivity(info_intent);
+                        break;
+                    case R.id.extra_api:
+                        Intent extro_intent = new Intent(MainActivity.this,ExtraPage.class);
+                        startActivity(extro_intent);
+                        break;
                 }
                 return true;
             }
@@ -175,8 +202,12 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplication(), "开冲", Toast.LENGTH_SHORT).show();
                 //开启网络线程
                 waitNet.setVisibility(View.VISIBLE);
-                if(R18) Net=new SetuNetThread(Values.setu_path_r18,mHandler);
-                else Net=new SetuNetThread(Values.setu_path,mHandler);
+                //读取API类型
+                IOUtils config = new IOUtils(MainActivity.this);
+                int APIType = config.GetSourceType();
+                String url = Values.source_url[APIType];
+                if(R18) url+="?r18=1";
+                Net=new SetuNetThread(url,mHandler);
                 isStoped=false;
                 Net.start();
             }
@@ -196,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         R18_SW.setOnClickListener(new View.OnClickListener() {//点击切换R18模式
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 if(R18){
@@ -216,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (load_success) {
-                    Uri pixiv_uri = Uri.parse(Values.pixiv_pic_path +setu_json.get("pid"));
+                    Uri pixiv_uri = Uri.parse(Values.pixiv_pic_url +setu_json.get("pid"));
                     Intent pixiv_intent = new Intent(Intent.ACTION_VIEW, pixiv_uri);
                     startActivity(pixiv_intent);
                 }
@@ -227,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (load_success) {
-                    Uri pic_uri = Uri.parse(setu_json.get("url").toString());
+                    Uri pic_uri = Uri.parse(Objects.requireNonNull(setu_json.get("url")).toString());
                     Intent pic_intent = new Intent(Intent.ACTION_VIEW, pic_uri);
                     startActivity(pic_intent);
                 }
@@ -238,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (load_success) {
-                    Uri author_uri = Uri.parse(Values.pixiv_auth_path+setu_json.get("uid"));
+                    Uri author_uri = Uri.parse(Values.pixiv_auth_url +setu_json.get("uid"));
                     Intent author_intent = new Intent(Intent.ACTION_VIEW, author_uri);
                     startActivity(author_intent);
                 }
@@ -246,17 +278,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private static final int MSG_SUCCESS = 0;//获取图片成功标识
-    private static final int FAILURE = 1;//失败标识
-    private static final int GET_JSON_SUCCESS = 2;//获取到JSON标识
-    private static final int GET_IMG_SIZE = 3;//获取到图片大小标识
-    private static final int IO_FAILURE = 4;//IO错误标识
-    private static final int GET_TOAST_MSG = 5;//得到需要Toast显示的消息
-
     private Handler mHandler = new Handler() {
         public void handleMessage (Message msg) {//此方法在ui线程运行
             switch(msg.what) {
-                case MSG_SUCCESS:
+                case MessageStatus.IMG_SUCCESS:
                     if(!isStoped){
                         isStoped=true;
                         stopNet.setVisibility(View.GONE);//隐藏中止按钮
@@ -295,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
 
-                case FAILURE://线程内部出错
+                case MessageStatus.FAILURE://线程内部出错
                     if(!isStoped){
                         Net.interrupt();//终止线程
                         isStoped=true;
@@ -319,13 +344,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
 
-                case GET_JSON_SUCCESS://获取JSON成功
+                case MessageStatus.GET_JSON_SUCCESS://获取JSON成功
                     setu_json=(JSONObject) msg.obj;
-                    Toast.makeText(getApplication(), "色图信息获取成功", Toast.LENGTH_SHORT).show();
                     INFO_UI_SHOW();
-                    piclink_pix.setText(Values.pixiv_pic_path+setu_json.get("pid"));
+                    piclink_pix.setText(Values.pixiv_pic_url +setu_json.get("pid"));
                     piclink_pic.setText(setu_json.get("url").toString());
-                    piclink_auth.setText(Values.pixiv_auth_path+setu_json.get("uid"));
+                    piclink_auth.setText(Values.pixiv_auth_url +setu_json.get("uid"));
                     setu_name.setText(setu_json.get("title")+"\n"+setu_json.get("author"));
                     Log.i("[JSON_INFO]",""+msg.obj);
                     //将JSON中的tags数据转换为String数组并更新UI
@@ -343,18 +367,14 @@ public class MainActivity extends AppCompatActivity {
                     load_success=true;
                     break;
 
-                case GET_IMG_SIZE://得到图片文件大小
+                case MessageStatus.GET_IMG_SIZE://得到图片文件大小
                     hsoSize=(Integer) msg.obj/1024;
                     Log.i("[bitmapSize]",msg.obj.toString());
                     break;
 
-                case IO_FAILURE://IO错误
+                case MessageStatus.IO_FAILURE://IO错误
                     Toast.makeText(MainActivity.this,msg.obj.toString(),Toast.LENGTH_SHORT).show();
                     save.setText("👴死了(重试保存)");
-                    break;
-
-                case GET_TOAST_MSG:
-                    Toast.makeText(MainActivity.this,msg.obj.toString(),Toast.LENGTH_SHORT).show();
                     break;
             }
         }

@@ -1,10 +1,18 @@
 <resources>
     <string name="app_name">来点色图</string>
-    <string name="version">1.4</string>
+    <string name="version">1.5</string>
     <string name="info">
         开发者：cbgan\n
         [cbgancna@gmail.com]\n
-        本软件所使用的API和URL均与开发者没有联系
+        要适当手冲哦（
     </string>
-
+    <string name="share_setu">share_setu</string>
+    <string name="github">GitHub</string>
+    <string name="goinfo">关于</string>
+    <string name="sw_source">切换源</string>
+    <string name="extra_api">怪浪怪浪的</string>
+    <string name="license">开源协议</string>
+    <string name="gnu_general_public_license_v3">GNU GENERAL PUBLIC LICENSE v3</string>
+    <string name="todo">TODO</string>
+    <string name="source_key_name">source</string>
 </resources>

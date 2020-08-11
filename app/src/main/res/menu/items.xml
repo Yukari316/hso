@@ -7,23 +7,30 @@
         android:id="@+id/stop"
         android:icon="@drawable/ic_stop"
         android:visible="true"
-        android:title="share_setu"
+        android:title="@string/share_setu"
         app:showAsAction="ifRoom"/>
 
     <!-- 关于按钮 -->
     <item
         android:id="@+id/share_setu"
         android:icon="@drawable/ic_share"
-        android:title="share_setu"
+        android:title="@string/share_setu"
         app:showAsAction="ifRoom"/>
 
     <!-- 菜单项 -->
+    <item
+        android:id="@+id/switch_source"
+        android:title="@string/sw_source"
+        app:showAsAction="never" />
     <item android:id="@+id/github"
-        android:title="GitHub"
+        android:title="@string/github"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/extra_api"
+        android:title="@string/extra_api" />
     <item android:id="@+id/goinfo"
-        android:title="关于"
+        android:title="@string/goinfo"
         app:showAsAction="never"/>
 
 </menu>
