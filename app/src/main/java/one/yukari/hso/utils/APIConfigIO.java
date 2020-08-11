@@ -7,15 +7,13 @@ import android.widget.Toast;
 
 import one.yukari.hso.resource.Values;
 
-public class IOUtils {
+public class APIConfigIO {
     private final String SourceKeyName = "source";
-    private final String LoliconTokenName = "lolicon_token";
-    private final String YukariTokenName = "yukari_token";
     private SharedPreferences sharedPreferences;
     private Context context;
 
-    public IOUtils(Context context){
-        this.sharedPreferences = context.getSharedPreferences("config", Context.MODE_PRIVATE);
+    public APIConfigIO(Context context){
+        this.sharedPreferences = context.getSharedPreferences("api_config", Context.MODE_PRIVATE);
         this.context = context;
     }
 
@@ -23,21 +21,23 @@ public class IOUtils {
     初始化配置文件
      */
     public boolean InitData(){
+        //检查是否存在初始值
         int currentSource=sharedPreferences.getInt(SourceKeyName,-1);
-        if(currentSource == -1){
+        if(currentSource == -1){//不存在值
             Log.i("[SharedPreferences_source]","Source config not found,Create new");
-            try{
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt(SourceKeyName,0);
-                editor.putString(LoliconTokenName,"");
-                editor.putString(YukariTokenName,"");
-                return editor.commit();
-            }catch (Exception e){
-                Log.e("[InitError]","sharedPreferences init error ("+e+")");
-                return false;
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            //写入所用源
+            editor.putInt(SourceKeyName,0);
+            //写入初始化APIKEY
+            for (String key_name :
+                    Values.apikey_names) {
+                editor.putString(key_name, "");
             }
-        }else {
+            //提交修改
+            return editor.commit();
+        }else {//存在值
             Log.i("[API source check]","Get source type"+ Values.source[currentSource]);
+            //显示选定的源
             Toast.makeText(context,"当前使用源："+Values.source[currentSource],Toast.LENGTH_SHORT).show();
             return true;
         }
@@ -52,6 +52,16 @@ public class IOUtils {
             System.exit(0);
             return -1;
         }
+    }
+
+    public String GetApiKey(int sourceType){
+        return sharedPreferences.getString(Values.apikey_names[sourceType],"");
+    }
+
+    public boolean ChangeApiKey(int sourceType, String newApiKey){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(Values.apikey_names[sourceType],newApiKey);
+        return editor.commit();
     }
 
     public boolean SwitchSource(int apiType){

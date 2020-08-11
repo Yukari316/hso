@@ -13,4 +13,8 @@ public class Values {
             "https://api.yukari.one/setu/",
             "https://api.lolicon.app/setu/"
     };
+    public static final String[] apikey_names = {
+            "yukari_token",
+            "lolicon_token"
+    };
 }

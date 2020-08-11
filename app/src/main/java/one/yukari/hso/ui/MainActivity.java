@@ -15,9 +15,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -30,7 +32,7 @@ import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 
 import one.yukari.hso.resource.MessageStatus;
-import one.yukari.hso.utils.IOUtils;
+import one.yukari.hso.utils.APIConfigIO;
 import one.yukari.hso.R;
 import one.yukari.hso.thread.SetuNetThread;
 import one.yukari.hso.utils.StreamIO;
@@ -40,6 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 
+import java.net.URL;
 import java.util.Objects;
 
 import me.gujun.android.taggroup.TagGroup;
@@ -82,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         INFOUI2=findViewById(R.id.INFOUI2);
         INFOUI3=findViewById(R.id.INFOUI3);
         TagUI=findViewById(R.id.TagUI);
+        //Dialog
+
         //按钮UI
         hso=findViewById(R.id.hso);
         save=findViewById(R.id.save);
@@ -100,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("[device api level]",Build.VERSION.SDK_INT+"");
 
         //检查配置文件
-        IOUtils config = new IOUtils(MainActivity.this);
+        APIConfigIO config = new APIConfigIO(MainActivity.this);
         if(!config.InitData()){
             System.exit(0);
         }
@@ -147,22 +152,68 @@ public class MainActivity extends AppCompatActivity {
                         hso.setBackgroundColor(Color.parseColor("#F16090"));
                         hso.setText("再给👴整一个");
                         break;
-                    case R.id.switch_source:
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle(R.string.sw_source)
+                    case R.id.switch_source://切换色图源
+                        AlertDialog.Builder builderSource = new AlertDialog.Builder(MainActivity.this);
+                        //创建单选列表dialog
+                        builderSource.setTitle(R.string.sw_source)
                                 .setItems(Values.source, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        IOUtils ioAction = new IOUtils(MainActivity.this);
+                                        APIConfigIO ioAction = new APIConfigIO(MainActivity.this);
+                                        //切换源
                                         if (ioAction.SwitchSource(which)){
                                             Log.i("[source sw]","change source to "+Values.source[which]);
                                             Toast.makeText(MainActivity.this,"成功切换到"+Values.source[which]+"!",Toast.LENGTH_SHORT).show();
-                                        }else{
+                                        }else{//配置文件修改失败
                                             Log.e("[source sw]","change source to "+Values.source[which]+"failed");
                                             Toast.makeText(MainActivity.this,"切换源失败",Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
-                        builder.create().show();
+                        builderSource.create().show();
+                        break;
+                    case R.id.change_api_key://修改色图源的APIKEY
+                        final APIConfigIO apiConfigIO = new APIConfigIO(MainActivity.this);
+                        //获取当前源类型
+                        final int apiType = apiConfigIO.GetSourceType();
+                        //获取原Key
+                        String oldApiKey = apiConfigIO.GetApiKey(apiType);
+                        AlertDialog.Builder builderApiKeyInput = new AlertDialog.Builder(MainActivity.this);
+                        builderApiKeyInput.setView(R.layout.apikey_dialog)
+                                // Add action buttons
+                                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {//确认按钮
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        EditText apiKey = ((AlertDialog)dialog).findViewById(R.id.api_key_edit_text);
+                                        if(apiKey == null){//防止某些时候系统抽风找不到组件
+                                            Toast.makeText(MainActivity.this,"遇到了未知错误",Toast.LENGTH_SHORT).show();
+                                            Log.e("[apikey dialog error]","EditText not found");
+                                            dialog.cancel();
+                                            return;
+                                        }
+                                        //获取输入的值
+                                        String key = apiKey.getText().toString();
+                                        if(apiConfigIO.ChangeApiKey(apiType,key)){//修改Key
+                                            if(key.equals("")) Toast.makeText(MainActivity.this,"已清空API KEY",Toast.LENGTH_SHORT).show();
+                                            else Toast.makeText(MainActivity.this,"已修改API KEY为:"+key,Toast.LENGTH_SHORT).show();
+                                        }else{
+                                            Toast.makeText(MainActivity.this,"修改API KEY失败\n(修改配置文件时发生错误)",Toast.LENGTH_SHORT).show();
+                                            Log.e("[Change Api key]","can't write to config file");
+                                        }
+                                        dialog.cancel();
+                                    }
+                                })
+                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {//取消按钮
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builderApiKeyInput.create();
+                        alert.show();
+                        EditText apiKey = alert.findViewById(R.id.api_key_edit_text);
+                        if(apiKey == null){//防止某些时候系统抽风找不到组件
+                            Toast.makeText(MainActivity.this,"遇到了未知错误",Toast.LENGTH_SHORT).show();
+                            Log.e("[apikey dialog error]","EditText not found");
+                        }else if(!oldApiKey.equals("")) apiKey.setHint("原Key:"+oldApiKey);
                         break;
                     case R.id.github:
                         Uri github_uri = Uri.parse("https://github.com/CBGan/hso");
@@ -186,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {//色图获取按钮监听
                 Log.i("[Condig file check]","Try find config");
-                IOUtils config = new IOUtils(MainActivity.this);
+                APIConfigIO config = new APIConfigIO(MainActivity.this);
                 stopNet.setVisibility(View.VISIBLE);//显示停止按钮
                 load_success=false;
                 INFO_UI_CLEAR();
@@ -206,10 +257,13 @@ public class MainActivity extends AppCompatActivity {
                 //开启网络线程
                 waitNet.setVisibility(View.VISIBLE);
                 //读取API类型
-                int APIType = config.GetSourceType();
-                String url = Values.source_url[APIType];
-                if(R18) url+="?r18=1";
-                Net=new SetuNetThread(url,mHandler);
+                int apiType = config.GetSourceType();
+                //读取API KEY
+                String apiKey = config.GetApiKey(apiType);
+                Uri.Builder url = Uri.parse(Values.source_url[apiType]).buildUpon();
+                if(R18) url.appendQueryParameter("r18","1");
+                if(!apiKey.equals("")) url.appendQueryParameter("apikey",apiKey);
+                Net=new SetuNetThread(url.toString(),mHandler);
                 isStoped=false;
                 Net.start();
             }
