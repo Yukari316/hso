@@ -3,16 +3,12 @@ package com.cbgan.hso.ui;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.LayoutDirection;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cbgan.hso.R;
@@ -31,13 +27,11 @@ public class ExtraPage extends AppCompatActivity {
     private EditText PID_Editor;
     private EditText Token_Editor;
     private ProgressBar WaitNet;
+    Button UploadBtn;
     private FrameLayout JsonFramelayout;
     private Thread Net;
 
-    private JsonViewLayout jsonViewLayout;
     private int JsonViewIndex = 0;
-
-    private boolean isStoped = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +42,9 @@ public class ExtraPage extends AppCompatActivity {
         Token_Editor = findViewById(R.id.token);
         WaitNet = findViewById(R.id.net_uploading);
         JsonFramelayout = findViewById(R.id.json_framelayout);
-        Button uploadBtn = findViewById(R.id.upload_pic);
+        UploadBtn = findViewById(R.id.upload_pic);
 
-        uploadBtn.setOnClickListener(new View.OnClickListener() {//点击按钮获得色图
+        UploadBtn.setOnClickListener(new View.OnClickListener() {//点击按钮获得色图
             @Override
             public void onClick(View v) {//色图获取按钮监听
                 String token = Token_Editor.getText().toString();
@@ -61,7 +55,7 @@ public class ExtraPage extends AppCompatActivity {
                     //删除原来的json视图
                     JsonFramelayout.removeAllViews();
                     Net=new SetuUploadThread(pid,token,mHandler);
-                    isStoped=false;
+                    UploadBtn.setEnabled(false);
                     Net.start();
                     WaitNet.setVisibility(View.VISIBLE);
                     PID_Editor.setEnabled(false);
@@ -82,9 +76,9 @@ public class ExtraPage extends AppCompatActivity {
             WaitNet.setVisibility(View.GONE);
             PID_Editor.setEnabled(true);
             Token_Editor.setEnabled(true);
+            UploadBtn.setEnabled(true);
             switch (msg.what){
                 case MessageStatus.GET_JSON_SUCCESS:
-                    isStoped=true;
                     JSONObject serverRespons = (JSONObject) msg.obj;
                     JsonViewLayout currJson = createJsonView();
                     JsonFramelayout.addView(currJson);
