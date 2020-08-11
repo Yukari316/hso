@@ -9,6 +9,6 @@
 
 [Lolicon](https://api.lolicon.app/#/setu)
 
-[Yukari](https://api.yukari.one/)
+[Yukari](https://www.yukari.one/2020/08/10/setuAPI/)
 
 提供
