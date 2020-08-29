@@ -432,6 +432,10 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this,msg.obj.toString(),Toast.LENGTH_SHORT).show();
                     save.setText("👴死了(重试保存)");
                     break;
+
+                case MessageStatus.TOAST:
+                    Toast.makeText(MainActivity.this,msg.obj.toString(),Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
     };

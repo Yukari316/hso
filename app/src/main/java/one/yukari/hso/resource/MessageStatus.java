@@ -6,4 +6,5 @@ public class MessageStatus {
     public static final int GET_JSON_SUCCESS = 2;//获取到JSON标识
     public static final int GET_IMG_SIZE = 3;//获取到图片大小标识
     public static final int IO_FAILURE = 4;//IO错误标识
+    public static final int TOAST = 5;
 }
