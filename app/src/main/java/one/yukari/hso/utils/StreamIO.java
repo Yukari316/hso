@@ -25,22 +25,25 @@ import one.yukari.hso.resource.MessageStatus;
 public class StreamIO {
     public static boolean save_setu(Bitmap setu, Handler msgHandler, JSONObject setu_json, Context context){
         String StorageState = Environment.getExternalStorageState();//获取外部存储状态
-        //通过正则获取文件名
-        Pattern pat=Pattern.compile("[\\w]+[.](jpeg|jpg|png)");//正则判断
-        String setu_url = Objects.requireNonNull(setu_json.get("url")).toString();
-        Matcher matcher=pat.matcher(setu_url);//条件匹配
-        String fileName = setu_json.get("pid")+".jpg";
-        while(matcher.find()) {
-            fileName= matcher.group();//截取文件名后缀名
-            Log.i("[get file name]",fileName);
-        }
+        Log.i("[StorageState Check]",StorageState);
         if (StorageState.equals(Environment.MEDIA_MOUNTED)){
+            //通过正则获取文件名
+            Pattern pat=Pattern.compile("[\\w]+[.](jpeg|jpg|png)");//正则判断
+            String setu_url = Objects.requireNonNull(setu_json.get("url")).toString();
+            Matcher matcher=pat.matcher(setu_url);//条件匹配
+            String fileName = setu_json.get("pid")+".jpg";
+            while(matcher.find()) {
+                fileName= matcher.group();//截取文件名后缀名
+                Log.i("[get file name]",fileName);
+            }
             if(Build.VERSION.SDK_INT<29){//API Level<29
                 //安卓10以下的文件系统适配，避免空指针
                 //检查图片目录是否存在
                 File hsoDir = new File(Environment.getExternalStorageDirectory(), "Pictures/hso");
                 Log.i("[API<29]","File System Check, RootStorageDirectory="+hsoDir.toPath());
-                if(!hsoDir.exists()) hsoDir.mkdirs();//不存在目录时创建目录
+                if(!hsoDir.exists()) {
+                    if(!hsoDir.mkdirs()) return false;//不存在目录时创建目录
+                }
                 File setu_file = new File(hsoDir,fileName);
                 try{
                     FileOutputStream setu_fileoutput_stream = new FileOutputStream(setu_file);
@@ -81,19 +84,19 @@ public class StreamIO {
                 //生成Uri
                 Uri setu_uri=context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,setu_img_value);
                 try{
-                    Log.i("[Get_Uri]",setu_uri.toString());
+                    Log.i("[Get_Uri]", Objects.requireNonNull(setu_uri).toString());
                     //写入文件流
                     OutputStream setu_output_stream=context.getContentResolver().openOutputStream(setu_uri);
                     setu.compress(Bitmap.CompressFormat.JPEG, 100, setu_output_stream);//处理色图
-                    setu_output_stream.close();
+                    Objects.requireNonNull(setu_output_stream).close();
                 }catch (Exception e){
                     Log.e("[Dir]",""+e);
                     msgHandler.obtainMessage(MessageStatus.IO_FAILURE,"wdnmd冲不出来了(文件系统错误:"+e+")").sendToTarget();
                     return false;
                 }
             }
-            Log.i("[Bitmap]",setu_json.get("pid").toString()+".jpg write successful");
-            msgHandler.obtainMessage(MessageStatus.TOAST,"冲出来了("+setu_json.get("pid").toString()+".jpg)").sendToTarget();
+            Log.i("[Bitmap]", Objects.requireNonNull(setu_json.get("pid")).toString()+".jpg write successful");
+            msgHandler.obtainMessage(MessageStatus.TOAST,"冲出来了("+fileName+")").sendToTarget();
             return true;
         }
         return false;

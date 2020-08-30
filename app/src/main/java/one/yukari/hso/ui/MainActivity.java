@@ -154,19 +154,36 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.switch_source://切换色图源
                         AlertDialog.Builder builderSource = new AlertDialog.Builder(MainActivity.this);
+                        final APIConfigIO ioAction = new APIConfigIO(MainActivity.this);
+                        final int oldType = ioAction.GetSourceType();
                         //创建单选列表dialog
                         builderSource.setTitle(R.string.sw_source)
-                                .setItems(Values.source, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        APIConfigIO ioAction = new APIConfigIO(MainActivity.this);
-                                        //切换源
-                                        if (ioAction.SwitchSource(which)){
-                                            Log.i("[source sw]","change source to "+Values.source[which]);
-                                            Toast.makeText(MainActivity.this,"成功切换到"+Values.source[which]+"!",Toast.LENGTH_SHORT).show();
-                                        }else{//配置文件修改失败
-                                            Log.e("[source sw]","change source to "+Values.source[which]+"failed");
-                                            Toast.makeText(MainActivity.this,"切换源失败",Toast.LENGTH_SHORT).show();
+                                .setSingleChoiceItems(R.array.source , oldType,
+                                        new DialogInterface.OnClickListener(){
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int which) {
+                                                //切换源
+                                                if (ioAction.SwitchSource(which)){
+                                                    Log.i("[source sw]","change source to "+Values.source[which]);
+                                                    Toast.makeText(MainActivity.this,"成功切换到"+Values.source[which]+"!",Toast.LENGTH_SHORT).show();
+                                                }else{//配置文件修改失败
+                                                    Log.e("[source sw]","change source to "+Values.source[which]+"failed");
+                                                    Toast.makeText(MainActivity.this,"切换源失败",Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
                                         }
+                                )
+                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {//取消按钮
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        //点击取消后切换回原来的源
+                                        ioAction.SwitchSource(oldType);
+                                        dialog.cancel();
+                                    }
+                                })
+                                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
                                     }
                                 });
                         builderSource.create().show();
